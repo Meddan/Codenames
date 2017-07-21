@@ -19,7 +19,7 @@ class Board extends Component {
   render() {
     console.log("render");
     console.log("this.state", this.state);
-    const { board } = this.state.board;
+    const board = this.state.board;
     console.log(board);
     return (
       <div className="App-intro">

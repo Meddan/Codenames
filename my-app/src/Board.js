@@ -8,17 +8,24 @@ import styled from "styled-components";
 class Board extends Component {
   constructor({ match }) {
     super(match.props);
-    console.log("match ", match);
-    console.log("params ", match.params);
-    console.log("id ", match.params.id);
     this.state = {
       id: match.params.id,
       board: []
     };
+    const promise = getJson("/game/" + this.state.id, null);
+
+    promise
+      .then(resp => {
+        //this.setState({ board: resp.agents });
+        //console.log(this.board);
+
+        this.setState({ board: resp.gameBoard.agents });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
   render() {
-    console.log("render");
-    console.log("this.state", this.state);
     const board = this.state.board;
     console.log(board);
     return (
@@ -32,25 +39,6 @@ class Board extends Component {
         })}
       </div>
     );
-  }
-  componentWillMount() {
-    const promise = getJson("/game/" + this.state.id, null);
-
-    promise
-      .then(resp => {
-        //this.setState({ board: resp.agents });
-        //console.log(this.board);
-        console.log("got resp");
-        console.log("resp.gameBoard.agents ", resp.gameBoard.agents);
-
-        this.setState({ board: resp.gameBoard.agents });
-
-        console.log("this.board", this.state.board);
-      })
-      .catch(err => {
-        console.log("promise broken");
-        console.log(err);
-      });
   }
 }
 /*

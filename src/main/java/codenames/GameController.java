@@ -1,24 +1,27 @@
 package codenames;
 
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.*;
 
 
 @RestController
 
-public class GameController  implements InitializingBean {
+public class GameController implements InitializingBean {
     private HashMap<String, Game> activeGames;
+    private MultiKeyMap sessionGameTeamMap;
 
     //@RequestMapping(method = RequestMethod.POST)
     @CrossOrigin
     @RequestMapping(value = "/newgame")
-    public Map<String, String> createNewGame() {
+    public Map<String, String> createNewGame(HttpServletRequest request) {
         String newID;
         do {
             newID = generateID();
@@ -28,7 +31,15 @@ public class GameController  implements InitializingBean {
     }
     @CrossOrigin
     @RequestMapping(value="/game/{path}", method = RequestMethod.GET)
-    public Game getGameByID(@PathVariable("path") String path){
+    public Game getGameByID(@PathVariable("path") String path, HttpServletRequest request){
+        HttpSession ses = request.getSession();
+        System.out.println("session: " + ses);
+        System.out.println("ID: " + ses.getId());
+        System.out.println("attributes: " + ses.getAttributeNames());
+        for (Enumeration<String> e = ses.getAttributeNames(); e.hasMoreElements();) {
+            System.out.println(e.nextElement());
+        }
+        System.out.println("class: " + ses.getClass());
         System.out.println("got get request at /game/ " + path);
         if(activeGames.containsKey(path)){
             return activeGames.get(path);
@@ -36,6 +47,22 @@ public class GameController  implements InitializingBean {
             return null;
         }
     }
+
+    @CrossOrigin
+    @RequestMapping(value="/game/{path}/active", method = RequestMethod.GET)
+    public Boolean activeID(@PathVariable("path") String path, HttpServletRequest request){
+        return activeGames.containsKey(path);
+    }
+    /*
+    @CrossOrigin
+    @RequestMapping(value="/game/{path}", method = RequestMethod.GET)
+    public Game doGameAction(@PathVariable("path") String path){
+        if(activeGames.containsKey(path)){
+            return activeGames.get(path);
+        } else {
+            return null;
+        }
+    }*/
 
     private String generateID(){
         StringBuilder sb = new StringBuilder();
@@ -51,5 +78,6 @@ public class GameController  implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         activeGames = new HashMap<>();
+        sessionGameTeamMap = new MultiKeyMap();
     }
 }

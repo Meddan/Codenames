@@ -3,11 +3,17 @@ package codenames;
 public class Game {
 
     private GameBoard gameBoard;
-    private enum Turn {
+    public enum Turn {
         RedSpymaster,
         RedAgent,
         BlueSpymaster,
-        BlueAgent
+        BlueAgent;
+
+        private static Turn[] vals = values();
+        public Turn next()
+        {
+            return vals[(this.ordinal()+1) % vals.length];
+        }
     }
     private Turn currentTurn;
     public Game(){
@@ -25,5 +31,8 @@ public class Game {
 
     public Turn getCurrentTurn() {
         return currentTurn;
+    }
+    public void nextTurn(){
+        currentTurn.next();
     }
 }

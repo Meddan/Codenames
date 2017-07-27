@@ -20,7 +20,11 @@ class Main extends Component {
     const promise = postJson("/newgame", null);
     promise
       .then(resp => {
+        //const teamPromise = postJson("/game/" + resp.response + "/redspymaster")
+        //.then(resp2 => {
         window.location = document.location.origin + "/game/" + resp.response;
+        //})
+        //.catch(err => console.log(err));
       })
       .catch(err => console.log(err));
   };

@@ -5,6 +5,7 @@
 .gradle
 .idea
 .mvn
+target
 
 ### Java ###
 # Compiled class file

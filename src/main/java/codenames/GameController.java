@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -42,12 +43,32 @@ public class GameController implements InitializingBean {
         System.out.println("class: " + ses.getClass());
         System.out.println("got get request at /game/ " + path);
         if(activeGames.containsKey(path)){
+            System.out.println("lookup: " + sessionGameTeamMap.get(ses, path));
             return activeGames.get(path);
         } else {
             return null;
         }
     }
 
+    @CrossOrigin
+    @ResponseBody
+    @RequestMapping(value="/game/{path}/{team}", method = RequestMethod.POST)
+    public void selectTeam(@PathVariable("path") String path, @PathVariable("team") String team, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        System.out.println("game: " +  path + " selecting team: " + team + " for session: " + request.getSession().getId());
+        Game.Turn newTeam;
+        if (team.equals("redspymaster")) {
+            newTeam = Game.Turn.RedSpymaster;
+        } else if (team.equals("bluespymaster")) {
+            newTeam = Game.Turn.BlueSpymaster;
+        } else if (team.equals("redagent")) {
+            newTeam = Game.Turn.RedAgent;
+        } else if (team.equals("blueagent")){
+            newTeam = Game.Turn.BlueAgent;
+        } else {
+            newTeam = Game.Turn.BlueAgent;
+        }
+        sessionGameTeamMap.put(request.getSession(), path, newTeam);
+    }
     @CrossOrigin
     @RequestMapping(value="/game/{path}/active", method = RequestMethod.GET)
     public Boolean activeID(@PathVariable("path") String path, HttpServletRequest request){
